@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: ReactNotesDb
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Test1234!
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+    networks:
+      - app-network
+
+  webapi:
+    build:
+      context: .
+      dockerfile: ReactNotes.Api/Dockerfile
+    container_name: ReactNotes.Api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=ReactNotesDb,1433;Database=ReactNotes;User Id=sa;Password=Test1234!;TrustServerCertificate=True;
+    ports:
+      - "8080:80"
+    depends_on:
+      - mssql
+    networks:
+      - app-network
+
+volumes:
+  mssql-data:
+
+networks:
+  app-network:
