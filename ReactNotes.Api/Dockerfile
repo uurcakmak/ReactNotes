@@ -11,7 +11,9 @@ COPY ReactNotes.Domain/ReactNotes.Domain.csproj ReactNotes.Domain/
 COPY ReactNotes.Application/ReactNotes.Application.csproj ReactNotes.Application/
 
 # Restore the dependencies for all projects
-RUN dotnet restore
+RUN dotnet restore ReactNotes.Domain/ReactNotes.Domain.csproj
+RUN dotnet restore ReactNotes.Application/ReactNotes.Application.csproj
+RUN dotnet restore ReactNotes.Api/ReactNotes.Api.csproj
 
 # Copy the remaining project files
 COPY . .

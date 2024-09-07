@@ -13,6 +13,18 @@ namespace ReactNotes.Api
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
+
+            // Add services to the container.
             builder.Services.AddScoped<INoteRepository, NoteRepository>();
 
             // Configure DbContext for SQL Server
@@ -27,6 +39,8 @@ namespace ReactNotes.Api
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             var app = builder.Build();
+
+            app.UseCors("AllowAllOrigins");
 
             // Apply migrations on app startup
             using (var scope = app.Services.CreateScope())

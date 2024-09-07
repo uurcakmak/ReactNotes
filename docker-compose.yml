@@ -29,6 +29,20 @@ services:
     networks:
       - app-network
 
+  # frontend:
+  #   build:
+  #     context: ./reactnotes.ui
+  #     dockerfile: Dockerfile
+  #   container_name: ReactNotes.UI
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - mssql
+  #     - webapi
+  #   networks:
+  #     - app-network
+
+
 volumes:
   mssql-data:
 
