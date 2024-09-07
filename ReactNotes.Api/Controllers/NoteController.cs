@@ -29,7 +29,7 @@ namespace ReactNotes.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CreateNoteRequestModel model)
+        public IActionResult Create([FromBody] CreateNoteRequestModel model)
         {
             var mappingModel = mapper.Map<CreateNoteRequestModel, Note>(model);
 
@@ -37,8 +37,8 @@ namespace ReactNotes.Api.Controllers
             return CreatedAtAction(nameof(GetNoteById), new { id = newNote.Id }, newNote);
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Update(UpdateNoteRequestModel model)
+        [HttpPut]
+        public IActionResult Update([FromBody] UpdateNoteRequestModel model)
         {
             var mappingModel = mapper.Map<UpdateNoteRequestModel, Note>(model);
 
@@ -51,8 +51,8 @@ namespace ReactNotes.Api.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(DeleteNoteRequestModel model)
+        [HttpDelete]
+        public IActionResult Delete([FromBody] DeleteNoteRequestModel model)
         {
             noteRepository.Delete(model.Id);
             return NoContent();
