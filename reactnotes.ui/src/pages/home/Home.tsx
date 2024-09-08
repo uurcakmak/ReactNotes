@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Column, useTable } from 'react-table';
+import { useTable, Column } from 'react-table';
 import { getAllNotes, Note } from './../../services/noteService';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Make sure Bootstrap is imported
 
 const Home: React.FC = () => {
     const [notes, setNotes] = useState<Note[]>([]);
@@ -47,30 +48,36 @@ const Home: React.FC = () => {
 
     return (
         <div className="container mt-5">
-            <h1>Notes</h1>
-            <table className="table" {...getTableProps()}>
-                <thead>
-                    {headerGroups.map(headerGroup => (
-                        <tr {...headerGroup.getHeaderGroupProps()}>
-                            {headerGroup.headers.map(column => (
-                                <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+            <div className="card">
+                <div className="card-header bg-primary text-white pt-3">
+                    <h2>Notes List</h2>
+                </div>
+                <div className="card-body">
+                    <table className="table table-striped" {...getTableProps()}>
+                        <thead>
+                            {headerGroups.map(headerGroup => (
+                                <tr {...headerGroup.getHeaderGroupProps()}>
+                                    {headerGroup.headers.map(column => (
+                                        <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+                                    ))}
+                                </tr>
                             ))}
-                        </tr>
-                    ))}
-                </thead>
-                <tbody {...getTableBodyProps()}>
-                    {rows.map(row => {
-                        prepareRow(row);
-                        return (
-                            <tr {...row.getRowProps()}>
-                                {row.cells.map(cell => (
-                                    <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                                ))}
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
+                        </thead>
+                        <tbody {...getTableBodyProps()}>
+                            {rows.map(row => {
+                                prepareRow(row);
+                                return (
+                                    <tr {...row.getRowProps()}>
+                                        {row.cells.map(cell => (
+                                            <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                        ))}
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     );
 };
