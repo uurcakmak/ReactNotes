@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useTable, Column } from 'react-table';
 import Swal from 'sweetalert2';
-import { getAllNotes, deleteNote, Note } from './../../services/noteService';
+import { Modal, Button, Form } from 'react-bootstrap';
+import { getAllNotes, createNote, deleteNote, Note } from './../../services/noteService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const Home: React.FC = () => {
     const [notes, setNotes] = useState<Note[]>([]);
+    const [showModal, setShowModal] = useState(false);
+    const [newNote, setNewNote] = useState({ title: '', content: '' });
 
     useEffect(() => {
         const fetchNotes = async () => {
@@ -15,6 +18,25 @@ const Home: React.FC = () => {
         };
         fetchNotes();
     }, []);
+
+
+    const handleCreate = async () => {
+        await createNote(newNote);
+        const updatedNotes = await getAllNotes(); 
+        setNotes(updatedNotes);
+        setShowModal(false);
+        Swal.fire('Success!', 'Your note has been created.', 'success');
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setNewNote(prevNote => ({ ...prevNote, [name]: value }));
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+        setNewNote({ title: '', content: '' });
+    };
 
     const handleDelete = async (id: string) => {
         const result = await Swal.fire({
@@ -82,9 +104,12 @@ const Home: React.FC = () => {
 
     return (
         <div className="container mt-5">
-            <div className="card">
-                <div className="card-header bg-primary text-white pt-3">
+            <div className="card">                
+                <div className="card-header bg-primary text-white pt-3 d-flex justify-content-between align-items-center">
                     <h2>Notes List</h2>
+                    <button className="btn btn-success" onClick={() => setShowModal(true)}>
+                        Create
+                    </button>
                 </div>
                 <div className="card-body">
                     <table className="table table-striped" {...getTableProps()}>
@@ -112,6 +137,46 @@ const Home: React.FC = () => {
                     </table>
                 </div>
             </div>
+
+            {/* Modal for Creating a New Note */}
+            <Modal show={showModal} onHide={handleCloseModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Create Note</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Title</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="title"
+                                value={newNote.title}
+                                onChange={handleInputChange}
+                                placeholder="Enter title"
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Content</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                name="content"
+                                value={newNote.content}
+                                onChange={handleInputChange}
+                                placeholder="Enter content"
+                                rows={5}
+                            />
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={handleCreate}>
+                        Submit
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };
