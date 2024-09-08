@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useTable, Column } from 'react-table';
-import { getAllNotes, Note } from './../../services/noteService';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Make sure Bootstrap is imported
+import Swal from 'sweetalert2';
+import { getAllNotes, deleteNote, Note } from './../../services/noteService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const Home: React.FC = () => {
     const [notes, setNotes] = useState<Note[]>([]);
@@ -13,6 +15,24 @@ const Home: React.FC = () => {
         };
         fetchNotes();
     }, []);
+
+    const handleDelete = async (id: string) => {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "Are you sure to delete this record?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        });
+
+        if (result.isConfirmed) {
+            await deleteNote(id);
+            setNotes(notes.filter(note => note.id !== id));  // Remove the deleted note from the list
+            Swal.fire('Deleted!', 'The note has been deleted.', 'success');
+        }
+    };
 
     const data = React.useMemo(() => notes, [notes]);
 
@@ -34,8 +54,22 @@ const Home: React.FC = () => {
                 Header: 'Last Updated',
                 accessor: 'lastUpdated' as keyof Note,
             },
+            {
+                Header: 'Actions',
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                Cell: ({ row }: any) => {
+                    return (
+                        <button
+                            className="btn btn-danger"
+                            onClick={() => handleDelete(row.original.id)}
+                        >
+                            <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                    );
+                }
+            }
         ],
-        []
+        [notes]
     );
 
     const {
