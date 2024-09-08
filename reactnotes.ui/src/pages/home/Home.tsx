@@ -4,7 +4,7 @@ import { useTable, Column } from 'react-table';
 import Swal from 'sweetalert2';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { getAllNotes, createNote, deleteNote, updateNote, Note } from './../../services/noteService';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import moment from 'moment'; // Import moment.js
 
 const Home: React.FC = () => {
     const [notes, setNotes] = useState<Note[]>([]);
@@ -87,6 +87,10 @@ const Home: React.FC = () => {
 
     const data = React.useMemo(() => notes, [notes]);
 
+    const formatDate = (dateString: string) => {
+        return moment(dateString).format('LLL');
+    };
+
     const columns: Column<Note>[] = React.useMemo(
         () => [
             {
@@ -99,11 +103,11 @@ const Home: React.FC = () => {
             },
             {
                 Header: 'Create Date',
-                accessor: 'createDate' as keyof Note,
+                accessor: (row) => formatDate(row.createDate)
             },
             {
                 Header: 'Last Updated',
-                accessor: 'lastUpdated' as keyof Note,
+                accessor: (row) => row.lastUpdated ? formatDate(row.lastUpdated) : 'N/A'
             },
             {
                 Header: 'Actions',
@@ -197,7 +201,7 @@ const Home: React.FC = () => {
                                 value={newNote.content}
                                 onChange={handleInputChange}
                                 placeholder="Enter content"
-                                rows={3}
+                                rows={15}
                             />
                         </Form.Group>
                     </Form>
@@ -237,7 +241,7 @@ const Home: React.FC = () => {
                                 value={selectedNote?.content || ''}
                                 onChange={handleInputChange}
                                 placeholder="Enter content"
-                                rows={3}
+                                rows={15}
                             />
                         </Form.Group>
                     </Form>
